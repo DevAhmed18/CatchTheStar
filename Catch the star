@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Catch the Star</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #container {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+      width: 420px;
+      position: relative;
+    }
+
+    #goalBox {
+      background: #fff3cd;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      font-weight: bold;
+      border: 1px solid #ffeeba;
+    }
+
+    #gameArea {
+      width: 400px;
+      height: 400px;
+      background: #f9f9f9;
+      border-radius: 10px;
+      position: relative;
+      margin: 15px auto;
+      overflow: hidden;
+    }
+
+    #target {
+      width: 60px;
+      position: absolute;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    #target:hover {
+      transform: scale(1.2);
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      background: #4facfe;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #gameOverBox {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<div id="container">
+  <h2>⭐ Catch the Star</h2>
+
+  <!-- GOAL -->
+  <div id="goalBox">
+    🎯 Goal: Click the star 50 times in 30 seconds!
+  </div>
+
+  <button onclick="startGame()">Start Game</button>
+
+  <p>Score: <span id="score">0</span> | Time: <span id="time">30</span></p>
+
+  <div id="gameArea">
+    <img id="target" src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png">
+  </div>
+
+  <!-- RESULT BOX -->
+  <div id="gameOverBox">
+    <h3 id="resultText">😢 You Lost</h3>
+    <p>Score: <span id="finalScore"></span></p>
+    <button onclick="startGame()">Play Again</button>
+  </div>
+
+</div>
+
+<script>
+let score = 0;
+let timeLeft = 30; // ✅ already 30 seconds
+let gameRunning = false;
+let timer;
+const goal = 50;
+
+const target = document.getElementById("target");
+const scoreDisplay = document.getElementById("score");
+const timeDisplay = document.getElementById("time");
+const gameArea = document.getElementById("gameArea");
+const gameOverBox = document.getElementById("gameOverBox");
+const finalScore = document.getElementById("finalScore");
+const resultText = document.getElementById("resultText");
+function moveTarget() {
+  const maxX = gameArea.clientWidth - target.clientWidth;
+  const maxY = gameArea.clientHeight - target.clientHeight;
+
+  target.style.left = Math.random() * maxX + "px";
+  target.style.top = Math.random() * maxY + "px";
+}
+
+target.onclick = function () {
+  if (!gameRunning) return;
+
+  score++;
+  scoreDisplay.textContent = score;
+
+  // WIN
+  if (score >= goal) {
+    clearInterval(timer);
+    gameRunning = false;
+
+    finalScore.textContent = score;
+    resultText.textContent = "🎉 You Win!";
+    gameOverBox.style.display = "block";
+    return;
+  }
+
+  moveTarget();
+};
+
+function startGame() {
+  score = 0;
+  timeLeft = 30; // ✅ reset to 30
+
+  gameRunning = true;
+
+  scoreDisplay.textContent = score;
+  timeDisplay.textContent = timeLeft;
+
+  gameOverBox.style.display = "none";
+  resultText.textContent = "😢 You Lost";
+
+  moveTarget();
+
+  clearInterval(timer);
+  timer = setInterval(() => {
+    timeLeft--;
+    timeDisplay.textContent = timeLeft;
+
+    // LOSE
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      gameRunning = false;
+
+      finalScore.textContent = score;
+      resultText.textContent = "😢 You Lost";
+      gameOverBox.style.display = "block";
+    }
+  }, 1000);
+}
+</script>
+
+</body>
+</html>
